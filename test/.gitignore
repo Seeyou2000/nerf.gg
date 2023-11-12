@@ -1,0 +1,11 @@
+#환경변수
+variables.env
+
+#node.js 모듈
+node_modules
+
+#vscode
+.vscode
+
+#sessions
+sessions
