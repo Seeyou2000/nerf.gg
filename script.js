@@ -1,18 +1,44 @@
-var API_key = "RGAPI-72bc1e39-dd63-4145-aaa8-c2e4f17e949b";
-var krUrl = "https://kr.api.riotgames.com";
+var API_key = "RGAPI-cf7287ad-5d21-4082-82a2-2fa95f9760c1";
+var serverUrl = "";
+var regionName = "";
 var summonerName = "";
+const Regions = [
+    'br1.api.riotgames.com',
+    'eun1.api.riotgames.com',
+    'euw1.api.riotgames.com',
+    'jp1.api.riotgames.com',
+    'kr.api.riotgames.com',
+    'la1.api.riotgames.com',
+    'la2.api.riotgames.com',
+    'na1.api.riotgames.com',
+    'oc1.api.riotgames.com',
+    'tr1.api.riotgames.com',
+    'ru.api.riotgames.com',
+    'ph2.api.riotgames.com',
+    'sg2.api.riotgames.com',
+    'th2.api.riotgames.com',
+    'tw2.api.riotgames.com',
+    'vn2.api.riotgames.com',
+]
+
+function ChooseRegion()
+{
+    regionIndex = document.getElementById("choose_region").value;
+    serverUrl = Regions[regionIndex];
+}
 
 function SearchSummoner()
 {
     summonerName = document.getElementById("summonerName").value;
     console.log(summonerName);
+    ChooseRegion();
     Data();
 }
 
 async function Data()
 {
     var summonerNameUrl = "/lol/summoner/v4/summoners/by-name/" + summonerName;
-    var fullSummonerNameUrl = krUrl + summonerNameUrl + "?api_key=" + API_key;
+    var fullSummonerNameUrl = "https://" + serverUrl + summonerNameUrl + "?api_key=" + API_key;
 
     console.log(fullSummonerNameUrl);
 
