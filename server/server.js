@@ -25,6 +25,9 @@ app.use(session({
 
 const db=mongoose.connection;
 
+require("dotenv").config({path: '../.env'});
+const API_KEY = process.env.API_KEY;
+
 //열렸는지 체크
 db.on('error',function(){
   console.log("fail");
@@ -41,7 +44,24 @@ const information1=mongoose.Schema({
 
 const Information1=mongoose.model('Schema',information1);
 
-
+const Regions = {
+  BR : 'br1.api.riotgames.com',
+  EUN : 'eun1.api.riotgames.com',
+  EUW : 'euw1.api.riotgames.com',
+  JP : 'jp1.api.riotgames.com',
+  KR : 'kr.api.riotgames.com',
+  LA : 'la1.api.riotgames.com',
+  LA2 :'la2.api.riotgames.com',
+  NA :'na1.api.riotgames.com',
+  OC : 'oc1.api.riotgames.com',
+  TR : 'tr1.api.riotgames.com',
+  RU :'ru.api.riotgames.com',
+  PH2 : 'ph2.api.riotgames.com',
+  SG2 : 'sg2.api.riotgames.com',
+  TH2 : 'th2.api.riotgames.com',
+  TW2 : 'tw2.api.riotgames.com',
+  VN2 : 'vn2.api.riotgames.com',
+}
 
 
 //서버열기
@@ -64,6 +84,16 @@ app.get('/',function(req,res){
   else{//세션이 있으면 검색화면으로
     res.redirect('/search')
   }
+})
+
+app.get('/search/by-name/:name/:region', async function(req, res){ 
+  console.log(API_KEY)
+  var summonerNameUrl = "/lol/summoner/v4/summoners/by-name/" + req.params.name;
+  var fullSummonerNameUrl = "https://" + Regions[req.params.region] + summonerNameUrl + "?api_key=" + API_KEY;
+
+  const dataSummoner = await fetch(fullSummonerNameUrl);
+  const fullDataSummoner = await dataSummoner.json();
+  res.json(fullDataSummoner);
 })
 
 //로그인페이지

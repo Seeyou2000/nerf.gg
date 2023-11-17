@@ -1,5 +1,3 @@
-var API_key = "RGAPI-cf7287ad-5d21-4082-82a2-2fa95f9760c1";
-var serverUrl = "";
 var regionName = "";
 var summonerName = "";
 const Regions = [
@@ -24,7 +22,6 @@ const Regions = [
 function ChooseRegion()
 {
     regionIndex = document.getElementById("choose_region").value;
-    serverUrl = Regions[regionIndex];
 }
 
 function SearchSummoner()
@@ -37,8 +34,8 @@ function SearchSummoner()
 
 async function Data()
 {
-    var summonerNameUrl = "/lol/summoner/v4/summoners/by-name/" + summonerName;
-    var fullSummonerNameUrl = "https://" + serverUrl + summonerNameUrl + "?api_key=" + API_key;
+    var summonerNameUrl = "/search/by-name/" + summonerName + "/" + regionIndex;
+    var fullSummonerNameUrl = location.origin + summonerNameUrl;
 
     console.log(fullSummonerNameUrl);
 
