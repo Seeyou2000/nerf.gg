@@ -6,8 +6,11 @@ const app=express();
 const cookiParser=require("cookie-parser");
 const session =require('express-session');
 const fileStore=require('session-file-store')(session)
-mongoose.connect('mongodb://localhost:27017/account')
+const path = require('path')
+mongoose.connect('mongodb://127.0.0.1:27017/account')
 
+
+app.use(express.static(path.join(__dirname, '../public')))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookiParser());
@@ -53,34 +56,22 @@ app.listen(4000, ()=>{
 
 
 //첫 페이지
-app.get('/',function(req,res){
- 
-   if(!req.session.NickName){//세션이 없으면  로그인페이지로
+app.get('/',function(req,res){ 
+  if(!req.session.NickName){//세션이 없으면  로그인페이지로
     res.redirect('/signin')
   }
   else{//세션이 있으면 검색화면으로
-  res.sendFile(__dirname+'/index.html');
+    res.redirect('/search')
   }
 })
 
 //로그인페이지
-app.get('/signin',function(req,res){  
+app.get('/signin',function(req,res,next){  
   if(req.session.NickName){//세션이 있으면 검색화면으로
-  res.sendFile(__dirname+'/index.html');
+    res.redirect('/search')
   }
-  else{
-  res.sendFile(__dirname+'/signin.html');
-  }
+  next()
 })
-
-
-
-//회원가입페이지
-
-app.get('/signup',function(req,res){
-  res.sendFile(__dirname+'/create_account.html')
-})
-
 
 //회원가입
 app.post('/signup',function(req,res){
