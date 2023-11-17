@@ -7,9 +7,10 @@ const cookiParser=require("cookie-parser");
 const session =require('express-session');
 const fileStore=require('session-file-store')(session)
 const path = require('path')
+const ejs=require('ejs');
 mongoose.connect('mongodb://127.0.0.1:27017/account')
 
-
+app.set('view engine','ejs')
 app.use(express.static(path.join(__dirname, '../public')))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -75,6 +76,10 @@ app.get('/signin',function(req,res,next){
 
 //회원가입
 app.post('/signup',function(req,res){
+  //중복ID입력시경고
+  if (Information1.findOne({id:req.body.ID})){
+    return res.render('PreexistId',{error:'이미 존재하는 ID입니다.'})
+  }
   let newInfo=new Information1({
     id: req.body.ID,
     password:req.body.PASSWORD
@@ -95,16 +100,15 @@ app.post('/signin',function(req,res){
         //세션 생성       
         req.session.NickName=information1.id;
         req.session.save
-        
         res.redirect('/');
       }
       else{
-        res.send('비밀번호 오류');
+        return res.render('WrongPw',{error:'잘못된 비밀번호 입니다.비밀번호를 확인해주세요'});
       }
     })
-    //id 불일치시
+    //id가 없을시
     .catch((err)=>{
-      res.send('id오류')
+      res.render('NullId',{error:'ID가 존재하지 않습니다'})
     })
 })
 
