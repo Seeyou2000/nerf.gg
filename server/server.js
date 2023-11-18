@@ -86,14 +86,24 @@ app.get('/',function(req,res){
   }
 })
 
+//소환사 이름, 지역을 통해 서버에서 정보 받아오기
 app.get('/search/by-name/:name/:region', async function(req, res){ 
-  console.log(API_KEY)
   var summonerNameUrl = "/lol/summoner/v4/summoners/by-name/" + req.params.name;
   var fullSummonerNameUrl = "https://" + Regions[req.params.region] + summonerNameUrl + "?api_key=" + API_KEY;
 
   const dataSummoner = await fetch(fullSummonerNameUrl);
   const fullDataSummoner = await dataSummoner.json();
   res.json(fullDataSummoner);
+})
+
+//소환사 고유 id, 지역을 통해 서버에서 정보 받아오기
+app.get('/search/by-summoner/:id/:region', async function(req, res){
+  var summonerIdUrl = "/lol/league/v4/entries/by-summoner/" + req.params.id;
+  var rankedSummonerUrl = "https://" + Regions[req.params.region] + summonerIdUrl + "?api_key=" + API_KEY;
+  
+  const rankedSummoner = await fetch(rankedSummonerUrl);
+  const fullRankedSummoner = await rankedSummoner.json();
+  res.json(fullRankedSummoner);
 })
 
 //로그인페이지

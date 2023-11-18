@@ -1,0 +1,36 @@
+#rankedData
+{
+    border: 2px solid black;
+    height: 150px;
+    padding: 12px;
+}
+#rankedWin
+{
+    color: green;
+    font-weight: bold;
+    font-size: 15px;
+    float: left;
+    padding: 15px;
+}
+#rankedLose
+{
+    color: red;
+    font-weight: bold;
+    font-size: 15px;
+    float: left;
+    padding: 15px;
+}
+#rankedWinRatio
+{
+    font-weight: bold;
+    font-size: 15px;
+    float: left;
+    padding: 15px;
+}
+#rankedDivision
+{
+    font-weight: bold;
+    font-size: 15px;
+    float: left;
+    padding: 15px;
+}

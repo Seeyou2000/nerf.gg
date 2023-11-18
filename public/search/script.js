@@ -1,34 +1,10 @@
-var regionName = "";
 var summonerName = "";
-const Regions = [
-    'br1.api.riotgames.com',
-    'eun1.api.riotgames.com',
-    'euw1.api.riotgames.com',
-    'jp1.api.riotgames.com',
-    'kr.api.riotgames.com',
-    'la1.api.riotgames.com',
-    'la2.api.riotgames.com',
-    'na1.api.riotgames.com',
-    'oc1.api.riotgames.com',
-    'tr1.api.riotgames.com',
-    'ru.api.riotgames.com',
-    'ph2.api.riotgames.com',
-    'sg2.api.riotgames.com',
-    'th2.api.riotgames.com',
-    'tw2.api.riotgames.com',
-    'vn2.api.riotgames.com',
-]
-
-function ChooseRegion()
-{
-    regionIndex = document.getElementById("choose_region").value;
-}
+var regionIndex = "";
 
 function SearchSummoner()
 {
     summonerName = document.getElementById("summonerName").value;
-    console.log(summonerName);
-    ChooseRegion();
+    regionIndex = document.getElementById("choose_region").value;
     Data();
 }
 
@@ -37,12 +13,8 @@ async function Data()
     var summonerNameUrl = "/search/by-name/" + summonerName + "/" + regionIndex;
     var fullSummonerNameUrl = location.origin + summonerNameUrl;
 
-    console.log(fullSummonerNameUrl);
-
     const dataSummoner = await fetch(fullSummonerNameUrl);
     const fullDataSummoner = await dataSummoner.json();
-
-    console.log(fullDataSummoner);
 
     //소환사 이름
     summonerName = fullDataSummoner.name;
@@ -56,4 +28,39 @@ async function Data()
     var profileIconId = fullDataSummoner.profileIconId;
     var profilePictureUrl = "https://ddragon.leagueoflegends.com/cdn/13.21.1/img/profileicon/" + profileIconId + ".png";
     document.getElementById("summonerProfilePictureData").src = profilePictureUrl;
+
+    //랭크 정보
+    var summonerIdUrl = "/search/by-summoner/" + fullDataSummoner.id + "/" + regionIndex;
+    var fullSummonerIdUrl = location.origin + summonerIdUrl;
+    const rankedSummoner = await fetch(fullSummonerIdUrl);
+    const fullRankedSummoner = await rankedSummoner.json();
+    if(fullRankedSummoner.length === 0)
+    {
+        //document.write("Unranked");
+    }
+    else
+    {
+        const rankedSummonerData = fullRankedSummoner[0];
+        var summonerWins = rankedSummonerData.wins;
+        var summonerLosses = rankedSummonerData.losses;
+        var summonerWinRatio = Math.round((summonerWins / (summonerLosses + summonerWins))*1000/10);
+        var division = rankedSummonerData.tier + " " + rankedSummonerData.rank;
+        var lpLanked = rankedSummonerData.leaguePoints;
+
+        document.getElementById("rankedWin").innerHTML = "승리 : " + summonerWins;
+        document.getElementById("rankedLose").innerHTML = "패배 : " + summonerLosses;
+        document.getElementById("rankedWinRatio").innerHTML = "승률 : " + summonerWinRatio + "%";
+        document.getElementById("rankedDivision").innerHTML = "Ranked : " + division + " " + lpLanked + "LP";
+
+        var divisionTier = rankedSummonerData.tier;
+        if(divisionTier == "IRON") document.getElementById("rankedDivision").style.color = "gray";
+        if(divisionTier == "BRONZE") document.getElementById("rankedDivision").style.color = "brown";
+        if(divisionTier == "SILVER") document.getElementById("rankedDivision").style.color = "lightgray";
+        if(divisionTier == "GOLD") document.getElementById("rankedDivision").style.color = "yellow";
+        if(divisionTier == "EMERALD") document.getElementById("rankedDivision").style.color = "lightgreen";
+        if(divisionTier == "DIAMOND") document.getElementById("rankedDivision").style.color = "lightblue";
+        if(divisionTier == "MASTER") document.getElementById("rankedDivision").style.color = "lightpurple";
+        if(divisionTier == "GRANDMASTER") document.getElementById("rankedDivision").style.color = "lightred";
+        if(divisionTier == "CHALLENGER") document.getElementById("rankedDivision").style.color = "gold";
+    }
 }
