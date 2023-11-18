@@ -140,7 +140,7 @@ app.post('/signin',function(req,res){
         //세션 생성       
         req.session.NickName=information1.id;
         req.session.save
-        res.redirect('/');
+        res.redirect('/search');
       }
       else{
         return res.render('WrongPw',{error:'잘못된 비밀번호 입니다.비밀번호를 확인해주세요'});
@@ -161,5 +161,35 @@ app.post('/signout',function(req,res){
     console.log('error');
   }
   res.redirect('/');
+});
+
+
+//비밀번호 변경
+app.post('/change_password',function(req,res){
+if(req.session){//세션이 있을때만(로그인중일때) 변경가능
+  let tempId=req.session.NickName;//세션에 저장한 id로 비밀번호수정
+  Information1.collection.updateOne(
+    {"id":tempId},
+    {$set:
+    {password:req.body.NEWPASSWORD}}    
+  )
+  req.session.destroy();//세션삭제
+  res.redirect('/');//첫화면으로
+  }
+else
+  res.redirect('/')//세션이 없으면=로그인정보가 없을시 첫화면으로
+});
+
+//계정삭제
+app.post('/delete_account',function(req,res){
+  if(req.session){//세션이 있을때만(로그인중일때) 삭제가능
+  Information1.collection.deleteOne(
+    {"id":req.session.NickName}
+  );
+  req.session.destroy();//세션삭제
+  res.redirect('/');//첫화면으로
+  }
+  else
+  res.redirect('/')//세션이 없으면=로그인정보가 없을시 첫화면으로
 });
 
