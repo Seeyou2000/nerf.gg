@@ -10,6 +10,7 @@ const path = require('path')
 const ejs=require('ejs');
 mongoose.connect('mongodb://127.0.0.1:27017/account')
 
+app.set('views', '../views')
 app.set('view engine','ejs')
 app.use(express.static(path.join(__dirname, '../public')))
 app.use(express.json());
