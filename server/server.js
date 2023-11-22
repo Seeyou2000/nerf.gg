@@ -8,9 +8,16 @@ const session =require('express-session');
 const fileStore=require('session-file-store')(session)
 const path = require('path')
 const ejs=require('ejs');
-mongoose.connect('mongodb://127.0.0.1:27017/account')
+mongoose.connect('mongodb://localhost:27017/account,localhost:27017/challenges').then(
+  ()=>{console.log('Success')},//연결 성공
+  err=>{console.log('fail')}//연결실패
+  )
 
-app.set('views', '../views')
+const AccountObj=mongoose.createConnection('mongodb://localhost:27017/account');
+const ChallengesObj=mongoose.createConnection('mongodb://localhost:27017/challenges');
+
+
+app.set('views', './views')
 app.set('view engine','ejs')
 app.use(express.static(path.join(__dirname, '../public')))
 app.use(express.json());
@@ -24,26 +31,12 @@ app.use(session({
   cookie:{httpOnly:true,}
 }));
 
-const db=mongoose.connection;
+
 
 require("dotenv").config({path: '../.env'});
 const API_KEY = process.env.API_KEY;
 
-//열렸는지 체크
-db.on('error',function(){
-  console.log("fail");
-});
-db.once('open',function(){
-  console.log('success')
-});
 
-const information1=mongoose.Schema({
-  id:{type:String,unique:1},
-  password:String
-});
-
-
-const Information1=mongoose.model('Schema',information1);
 
 const Regions = {
   BR : 'br1.api.riotgames.com',
@@ -64,6 +57,23 @@ const Regions = {
   VN2 : 'vn2.api.riotgames.com',
 }
 
+const AccountSchema = new mongoose.Schema({
+  id:{type:String,unique:1},
+  password:String,
+  AttendanceCounter:{type:Number,default:0}//출석횟수=로그인횟수.나중에변경필요
+})
+const AccountTable=AccountObj.model('AccountTable',AccountSchema)
+//const Account=new AccountTable;
+
+const ChallengesSchema = new mongoose.Schema({
+  id:String,//로그인한 계정의 ID
+  date:String//로그인한날짜
+})
+const ChallengesTable=ChallengesObj.model('ChallengesTable',ChallengesSchema)
+//const Challenges=new ChallengesTable;
+
+
+
 
 //서버열기
 
@@ -79,7 +89,7 @@ app.listen(4000, ()=>{
 
 //첫 페이지
 app.get('/',function(req,res){ 
-  if(!req.session.NickName){//세션이 없으면  로그인페이지로
+  if(!req.session.Sid){//세션이 없으면  로그인페이지로
     res.redirect('/signin')
   }
   else{//세션이 있으면 검색화면으로
@@ -109,53 +119,84 @@ app.get('/search/by-summoner/:id/:region', async function(req, res){
 
 //로그인페이지
 app.get('/signin',function(req,res,next){  
-  if(req.session.NickName){//세션이 있으면 검색화면으로
+  if(req.session.Sid){//세션이 있으면 검색화면으로
     res.redirect('/search')
   }
   next()
 })
 
 //회원가입
-app.post('/signup',function(req,res){
-  //중복ID입력시경고
-  if (Information1.findOne({id:req.body.ID})){
+app.post('/signup',async function(req,res){
+   let tempId=req.body.ID;
+   let tempPw=req.body.PASSWORD;
+   let Account= await AccountTable.findOne({id:tempId});
+   //중복ID입력시경고
+  if (Account){
     return res.render('PreexistId',{error:'이미 존재하는 ID입니다.'})
   }
-  let newInfo=new Information1({
-    id: req.body.ID,
-    password:req.body.PASSWORD
-  });
-  newInfo.save();  
-  return res.redirect('/')
+  else
+  {
+    let Account=new AccountTable({
+      id:tempId,
+      password:tempPw
+    });
+    Account.save()
+    return res.redirect('/')
+  } ;
+  
 })
 
+
 //로그인
-app.post('/signin',function(req,res){
+app.post('/signin',async function(req,res){
   //mongodb에서 요청한 id찾기
-  Information1.findOne({id:req.body.ID})
-    //id 있는지 확인
-    .then(information1=>{
+  let tempId=req.body.ID;
+  let tempPw=req.body.PASSWORD;
+  let Account=await AccountTable.findOne({id:tempId})
+ // let challenges=await ChallengesTable.find({id:tempId})
+       //id 있는지 확인
+    if(Account){
       //비밀번호 까지 일치한다면 세션 생성
-      if(req.body.PASSWORD==information1.password){
-       
-        //세션 생성       
-        req.session.NickName=information1.id;
-        req.session.save
-        res.redirect('/search');
-      }
-      else{
+      if(tempPw==Account.password){
+        
+        let tempdate=ChangeDateNow();
+        //로그인 기록확인   
+          //오늘 로그인 한적이 있는지 확인
+          let challenges=await ChallengesTable.find({$and:[{id:tempId},{date:tempdate}]});
+          //로그인한적이 없다면
+          if(challenges.length==0){      
+             let challenges=new ChallengesTable({//challenges db에 저장
+             id:tempId,
+             date:tempdate});
+             challenges.save()
+             //출석카운터 +1
+             let Account=await AccountTable.findOne({id:tempId})
+             Account.AttendanceCounter+=1;
+             Account.save();
+          }
+          //오늘 로그인 한적이 있는경우
+          else{console.log('로그인기록있음');}
+
+          //세션 생성       
+          req.session.Sid=tempId;
+          let Account=await AccountTable.findOne({id:tempId})
+          //console.log(Account)
+          req.session.date=Account.AttendanceCounter;
+          req.session.save
+       res.redirect('/search');}
+      else{//비밀번호 오류
         return res.render('WrongPw',{error:'잘못된 비밀번호 입니다.비밀번호를 확인해주세요'});
       }
-    })
+    }
     //id가 없을시
-    .catch((err)=>{
+    else{     
       res.render('NullId',{error:'ID가 존재하지 않습니다'})
-    })
+    }
 })
 
 //로그 아웃
 app.post('/signout',function(req,res){
-  if(req.session.NickName){
+  if(req.session.Sid){
     req.session.destroy();//세션삭제
   }
   else{
@@ -166,14 +207,12 @@ app.post('/signout',function(req,res){
 
 
 //비밀번호 변경
-app.post('/change_password',function(req,res){
+app.post('/change_password',async function(req,res){
 if(req.session){//세션이 있을때만(로그인중일때) 변경가능
-  let tempId=req.session.NickName;//세션에 저장한 id로 비밀번호수정
-  Information1.collection.updateOne(
-    {"id":tempId},
-    {$set:
-    {password:req.body.NEWPASSWORD}}    
-  )
+  let tempId=req.session.Sid;//세션에 저장한 id의 비밀번호수정
+  let Account=await AccountTable.findOne({"id":tempId})
+  Account.password=req.body.NEWPASSWORD;
+  Account.save()
   req.session.destroy();//세션삭제
   res.redirect('/');//첫화면으로
   }
@@ -182,11 +221,10 @@ else
 });
 
 //계정삭제
-app.post('/delete_account',function(req,res){
+app.post('/delete_account',async function(req,res){
   if(req.session){//세션이 있을때만(로그인중일때) 삭제가능
-  Information1.collection.deleteOne(
-    {"id":req.session.NickName}
-  );
+  await AccountTable.deleteOne({"id":req.session.Sid})
+  await ChallengesTable.deleteMany({"id":req.session.Sid})
   req.session.destroy();//세션삭제
   res.redirect('/');//첫화면으로
   }
@@ -194,3 +232,25 @@ app.post('/delete_account',function(req,res){
   res.redirect('/')//세션이 없으면=로그인정보가 없을시 첫화면으로
 });
 
+
+//현재날짜형식 변환함수
+function ChangeDateNow(){
+var date=new Date();
+var year=date.getFullYear();
+var month=new String(date.getMonth()+1);
+month=(month>=10?month:'0'+month);
+var day=new String(date.getDate());
+day=(day>=10?day:'0'+day);
+var korFormat=year+'-'+month+'-'+day;
+return korFormat;
+}
+
+//도전과제 페이지
+app.get('/challenges',function(req,res){
+  if(req.session){
+    
+  res.render('Challenges',{date:req.session.date})}
+  else{
+    res.redirect('/')
+  }
+})
