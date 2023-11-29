@@ -28,7 +28,7 @@
 <div class>
   출석일수 : <%=date%>
   <% for(var i=1;i<=9;i=i+2){%>
-    <% if (date>i) {%>
+    <% if (date>=i) {%>
     <img src="images/star.png" class="starsize">
     <%}else{%>
     <img src="images/star.png" class="grayscale starsize">
@@ -39,7 +39,7 @@
 <div class="search">
   검색횟수 : <%=search%> 
   <% for(var i=5;i<=25;i=i+5){%>
-    <% if (search>i) {%>
+    <% if (search>=i) {%>
       <img src="images/star.png" class="starsize">
     <%}else{%>
       <img src="images/star.png" class="grayscale starsize">
