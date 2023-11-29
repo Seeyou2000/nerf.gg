@@ -39,22 +39,22 @@ const API_KEY = process.env.API_KEY;
 
 
 const Regions = {
-  BR : 'br1.api.riotgames.com',
-  EUN : 'eun1.api.riotgames.com',
-  EUW : 'euw1.api.riotgames.com',
-  JP : 'jp1.api.riotgames.com',
-  KR : 'kr.api.riotgames.com',
-  LA : 'la1.api.riotgames.com',
-  LA2 :'la2.api.riotgames.com',
-  NA :'na1.api.riotgames.com',
-  OC : 'oc1.api.riotgames.com',
-  TR : 'tr1.api.riotgames.com',
-  RU :'ru.api.riotgames.com',
-  PH2 : 'ph2.api.riotgames.com',
-  SG2 : 'sg2.api.riotgames.com',
-  TH2 : 'th2.api.riotgames.com',
-  TW2 : 'tw2.api.riotgames.com',
-  VN2 : 'vn2.api.riotgames.com',
+  BR : ['br1.api.riotgames.com', 'americas.api.riotgames.com'],
+  EUN : ['eun1.api.riotgames.com', 'europe.api.riotgames.com'],
+  EUW : ['euw1.api.riotgames.com', 'europe.api.riotgames.com'],
+  JP : ['jp1.api.riotgames.com', 'asia.api.riotgames.com'],
+  KR : ['kr.api.riotgames.com', 'asia.api.riotgames.com'],
+  LA : ['la1.api.riotgames.com', 'americas.api.riotgames.com'],
+  LA2 :['la2.api.riotgames.com', 'americas.api.riotgames.com'],
+  NA :['na1.api.riotgames.com', 'americas.api.riotgames.com'],
+  OC : ['oc1.api.riotgames.com', 'sea.api.riotgames.com'],
+  TR : ['tr1.api.riotgames.com', 'europe.api.riotgames.com'],
+  RU :['ru.api.riotgames.com', 'europe.api.riotgames.com'],
+  PH2 : ['ph2.api.riotgames.com', 'sea.api.riotgames.com'],
+  SG2 : ['sg2.api.riotgames.com', 'sea.api.riotgames.com'],
+  TH2 : ['th2.api.riotgames.com', 'sea.api.riotgames.com'],
+  TW2 : ['tw2.api.riotgames.com', 'sea.api.riotgames.com'],
+  VN2 : ['vn2.api.riotgames.com', 'sea.api.riotgames.com'],
 }
 
 const AccountSchema = new mongoose.Schema({
@@ -99,20 +99,62 @@ app.get('/',function(req,res){
   }
 })
 
-//소환사 이름, 지역을 통해 서버에서 정보 받아오기
+//소환사 이름, 지역을 통해 서버에서 소환사 정보, 랭크 게임 정보 받아오기
 app.get('/search/by-name/:name/:region', async function(req, res){ 
   var summonerNameUrl = "/lol/summoner/v4/summoners/by-name/" + req.params.name;
-  var fullSummonerNameUrl = "https://" + Regions[req.params.region] + summonerNameUrl + "?api_key=" + API_KEY;
+  var fullSummonerNameUrl = "https://" + Regions[req.params.region][0] + summonerNameUrl + "?api_key=" + API_KEY;
 
   const dataSummoner = await fetch(fullSummonerNameUrl);
   const fullDataSummoner = await dataSummoner.json();
-  res.json(fullDataSummoner);
+
+  var puuid = fullDataSummoner['puuid'];
+  var matchListUrl = "/lol/match/v5/matches/by-puuid/"+ puuid +"/ids?start=0&count=30&api_key=" + API_KEY;
+  var fullMatchListUrl = "https://" + Regions[req.params.region][1] + matchListUrl;
+  const dataMatchIdList = await fetch(fullMatchListUrl);
+  const fullDataMatchIdList = await dataMatchIdList.json();
+
+  const matchPromises = fullDataMatchIdList.map(async (matchId) => {
+     var retryCount = 0;
+
+      var matchUrl = "/lol/match/v5/matches/"+ matchId +"?api_key=" + API_KEY;
+      var fullMatchUrl = "https://" + Regions[req.params.region][1] + matchUrl;
+      let dataMatch = await fetch(fullMatchUrl);
+
+      //429면 다시 시도해라~~~
+      while (dataMatch.status === 429 && retryCount < 3)
+      {
+        function sleep(ms) {
+          return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+          });
+        }
+        await sleep(300);
+        dataMatch = await fetch(fullMatchUrl);
+        retryCount++;
+      }
+
+      const fullDataMatch = await dataMatch.json();
+      return fullDataMatch;
+    }
+  );
+
+  const matches = await Promise.all(matchPromises);
+  //var matchFail = matches.map((val, idx) => ).filter((obj) => obj.hasOwnProperty('status'))
+
+  console.log(matches);
+
+  const combinedData = {
+    summoner: fullDataSummoner,
+    matches
+  };
+
+  res.json(combinedData);
 })
 
-//소환사 고유 id, 지역을 통해 서버에서 정보 받아오기
+//소환사 고유 id, 지역을 통해 서버에서 소환사의 랭크게임 승패 정보 받아오기
 app.get('/search/by-summoner/:id/:region', async function(req, res){
   var summonerIdUrl = "/lol/league/v4/entries/by-summoner/" + req.params.id;
-  var rankedSummonerUrl = "https://" + Regions[req.params.region] + summonerIdUrl + "?api_key=" + API_KEY;
+  var rankedSummonerUrl = "https://" + Regions[req.params.region][0] + summonerIdUrl + "?api_key=" + API_KEY;
   
   const rankedSummoner = await fetch(rankedSummonerUrl);
   const fullRankedSummoner = await rankedSummoner.json();
