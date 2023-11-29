@@ -60,10 +60,12 @@ const Regions = {
 const AccountSchema = new mongoose.Schema({
   id:{type:String,unique:1},
   password:String,
-  AttendanceCounter:{type:Number,default:0}//출석횟수=로그인횟수.나중에변경필요
+  AttendanceCounter:{type:Number,default:0},//출석횟수=로그인횟수.나중에변경필요
+  SearchCounter:{type:Number,default:0}//검색횟수
 })
 const AccountTable=AccountObj.model('AccountTable',AccountSchema)
 //const Account=new AccountTable;
+
 
 const ChallengesSchema = new mongoose.Schema({
   id:String,//로그인한 계정의 ID
@@ -71,7 +73,7 @@ const ChallengesSchema = new mongoose.Schema({
 })
 const ChallengesTable=ChallengesObj.model('ChallengesTable',ChallengesSchema)
 //const Challenges=new ChallengesTable;
-
+//module.exports={AccountTable,ChallengesTable};
 
 
 
@@ -115,6 +117,13 @@ app.get('/search/by-summoner/:id/:region', async function(req, res){
   const rankedSummoner = await fetch(rankedSummonerUrl);
   const fullRankedSummoner = await rankedSummoner.json();
   res.json(fullRankedSummoner);
+
+   //검색횟수 db에서 가져온후 +1하고 저장
+   let tempId=req.session.Sid
+   let Account=await AccountTable.findOne({id:tempId})
+   Account.SearchCounter+=1;
+   req.session.search=Account.SearchCounter;
+   Account.save();
 })
 
 //로그인페이지
@@ -246,10 +255,12 @@ return korFormat;
 }
 
 //도전과제 페이지
-app.get('/challenges',function(req,res){
+
+app.get('/challenges',async function(req,res){
   if(req.session){
-    
-  res.render('Challenges',{date:req.session.date})}
+  let Account=await AccountTable.findOne({"id":req.session.Sid})
+  
+  res.render('Challenges',{tid:req.session.Sid,date:req.session.date,search:Account.SearchCounter})}
   else{
     res.redirect('/')
   }
