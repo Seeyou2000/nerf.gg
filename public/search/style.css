@@ -3,62 +3,72 @@ body
     margin: 0%;
     text-align: center;
     vertical-align: center;
+    background-color: rgb(227, 223, 223);
 }
-.button_group
+.button_and_summoner
 {
     display: flex;
-    background-color: rgb(45, 45, 45);
+    align-items: center;
+    background-color: rgb(189, 189, 189);
+}
+.button_and_summoner > #search
+{
+    margin-left: auto;
+}
+.button_and_summoner > #search > *
+{
+    height: 25px;
 }
 .button
 {
     border: none;
     padding: 10px;
-    margin: 5px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    background-color: rgb(45,45,45);
-    color: white;
-    
+    background-color: rgb(189, 189, 189);
 }
 .button:hover
 {
-    color: #FFFF00;
+    background-color: skyblue;
 }
-
-#rankedData
+.container
 {
-    border: 2px solid black;
-    height: 150px;
-    padding: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 450px;
+    height: 200px;
+    background-color: white;
+}
+.item
+{
+    border: solid 2px black;
+    top: 50%;
+    left: 50%;
+}
+.item:nth-child(1)
+{
+    grid-row: 1/3;
 }
 #rankedWin
 {
     color: green;
     font-weight: bold;
     font-size: 15px;
-    float: left;
-    padding: 15px;
 }
 #rankedLose
 {
     color: red;
     font-weight: bold;
     font-size: 15px;
-    float: left;
-    padding: 15px;
 }
 #rankedWinRatio
 {
     font-weight: bold;
     font-size: 15px;
-    float: left;
-    padding: 15px;
 }
 #rankedDivision
 {
     font-weight: bold;
     font-size: 15px;
-    float: left;
-    padding: 15px;
 }
