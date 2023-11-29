@@ -1,5 +1,8 @@
 var inputSummonerName = "";
 var regionIndex = "";
+var matchInfos = [];
+var gameCreationArray = [];
+var parseMatchData = [];
 
 function SearchSummoner()
 {
@@ -16,7 +19,7 @@ async function Data()
     const dataSummoner = await fetch(fullSummonerNameUrl);
     const { summoner:fullDataSummoner, matches:fullDataMatch } = await dataSummoner.json();
     
-    const {name: summonerName, summonerLevel, profileIconId, id: summonerId} = fullDataSummoner;
+    const {name: summonerName, summonerLevel, profileIconId, id: summonerId, puuid} = fullDataSummoner;
 
     //소환사 이름
     document.getElementById("summonerNameData").innerHTML = "소환사 이름 : " + summonerName;
@@ -28,15 +31,50 @@ async function Data()
     var profilePictureUrl = "https://ddragon.leagueoflegends.com/cdn/13.21.1/img/profileicon/" + profileIconId + ".png";
     document.getElementById("summonerProfilePictureData").src = profilePictureUrl;
 
-    console.log(fullDataMatch);
+    //particpants까지 가는 과정
+    for(matchData of fullDataMatch)
+    {
+        matchInfos.push(matchData['info'].participants);
+        gameCreationArray.push(matchData['info'].gameCreation);
+    }
+
+    console.log(matchInfos);
+
+    for(matchInfo of matchInfos)
+    {
+        for(let i = 0; i<matchInfos.length; i++)
+        {
+            summonerInfo = matchInfo[i];
+            gameCreation = gameCreationArray[i];
+
+            if(summonerInfo.puuid === puuid)
+            {
+                summonerInfoDict = {
+                    kills : summonerInfo.kills,
+                    deaths : summonerInfo.deaths,
+                    assists : summonerInfo.assists,
+                    timePlayed : summonerInfo.timePlayed,
+                    gameCreation : gameCreation,
+                    win : summonerInfo.win,
+                    champLevel : summonerInfo.champLevel,
+                    championName : summonerInfo.championName,
+                    doubleKills : summonerInfo.doubleKills,
+                    tripleKills : summonerInfo.tripleKills,
+                    quadraKills : summonerInfo.quadraKills,
+                    pentaKills : summonerInfo.pentaKills,
+                }
+                parseMatchData.push(summonerInfoDict);
+                break;
+            }
+        }
+    }
+    
 
     //랭크 정보
     var summonerIdUrl = "/search/by-summoner/" + summonerId + "/" + regionIndex;
     var fullSummonerIdUrl = location.origin + summonerIdUrl;
     const rankedSummoner = await fetch(fullSummonerIdUrl);
     const fullRankedSummoner = await rankedSummoner.json();
-
-    console.log(fullRankedSummoner);
 
     //랭크 게임 정보
 
