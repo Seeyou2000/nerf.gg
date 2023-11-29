@@ -22,7 +22,7 @@ async function Data()
     const {name: summonerName, summonerLevel, profileIconId, id: summonerId, puuid} = fullDataSummoner;
 
     //소환사 이름
-    document.getElementById("summonerNameData").innerHTML = "소환사 이름 : " + summonerName;
+    document.getElementById("summonerNameData").innerHTML = "<h1>" + summonerName + "</h1>";
 
     //소환사 레벨
     document.getElementById("summonerLevelData").innerHTML = "소환사 레벨 : " + summonerLevel;
@@ -38,8 +38,6 @@ async function Data()
         gameCreationArray.push(matchData['info'].gameCreation);
     }
 
-    console.log(matchInfos);
-
     for(matchInfo of matchInfos)
     {
         for(let i = 0; i<matchInfos.length; i++)
@@ -49,6 +47,8 @@ async function Data()
 
             if(summonerInfo.puuid === puuid)
             {
+                console.log(summonerInfo.puuid);
+                console.log(puuid);
                 summonerInfoDict = {
                     kills : summonerInfo.kills,
                     deaths : summonerInfo.deaths,
@@ -76,8 +76,9 @@ async function Data()
     const rankedSummoner = await fetch(fullSummonerIdUrl);
     const fullRankedSummoner = await rankedSummoner.json();
 
-    //랭크 게임 정보
+    console.log(fullRankedSummoner);
 
+    //랭크 게임 정보
     if(fullRankedSummoner.length === 0)
     {
         //document.write("Unranked");
@@ -89,9 +90,9 @@ async function Data()
         var summonerWinRatio = Math.round((summonerWins / (summonerLosses + summonerWins))*1000/10);
         var division = tier + " " + rank;
 
-        document.getElementById("rankedWin").innerHTML = "승리 : " + summonerWins;
-        document.getElementById("rankedLose").innerHTML = "패배 : " + summonerLosses;
-        document.getElementById("rankedWinRatio").innerHTML = "승률 : " + summonerWinRatio + "%";
+        document.getElementById("rankedWin").innerHTML = "승리 : " + summonerWins + "<br>";
+        document.getElementById("rankedLose").innerHTML = "패배 : " + summonerLosses + "<br>";
+        document.getElementById("rankedWinRatio").innerHTML = "승률 : " + summonerWinRatio + "%<br>";
         document.getElementById("rankedDivision").innerHTML = "Ranked : " + division + " " + lpLanked + "LP";
 
         if(tier == "IRON") document.getElementById("rankedDivision").style.color = "gray";

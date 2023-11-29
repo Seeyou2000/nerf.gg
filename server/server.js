@@ -108,19 +108,19 @@ app.get('/search/by-name/:name/:region', async function(req, res){
   const fullDataSummoner = await dataSummoner.json();
 
   var puuid = fullDataSummoner['puuid'];
-  var matchListUrl = "/lol/match/v5/matches/by-puuid/"+ puuid +"/ids?start=0&count=30&api_key=" + API_KEY;
+  var matchListUrl = "/lol/match/v5/matches/by-puuid/"+ puuid +"/ids?queue=420&type=ranked&start=0&count=20&api_key=" + API_KEY;
   var fullMatchListUrl = "https://" + Regions[req.params.region][1] + matchListUrl;
   const dataMatchIdList = await fetch(fullMatchListUrl);
   const fullDataMatchIdList = await dataMatchIdList.json();
 
   const matchPromises = fullDataMatchIdList.map(async (matchId) => {
-     var retryCount = 0;
+      var retryCount = 0;
 
       var matchUrl = "/lol/match/v5/matches/"+ matchId +"?api_key=" + API_KEY;
       var fullMatchUrl = "https://" + Regions[req.params.region][1] + matchUrl;
       let dataMatch = await fetch(fullMatchUrl);
 
-      //429면 다시 시도해라~~~
+      //429면 다시 시도하는 코드
       while (dataMatch.status === 429 && retryCount < 3)
       {
         function sleep(ms) {
@@ -139,9 +139,6 @@ app.get('/search/by-name/:name/:region', async function(req, res){
   );
 
   const matches = await Promise.all(matchPromises);
-  //var matchFail = matches.map((val, idx) => ).filter((obj) => obj.hasOwnProperty('status'))
-
-  console.log(matches);
 
   const combinedData = {
     summoner: fullDataSummoner,
@@ -301,7 +298,7 @@ return korFormat;
 app.get('/challenges',async function(req,res){
   if(req.session){
   let Account=await AccountTable.findOne({"id":req.session.Sid})
-  
+    
   res.render('Challenges',{tid:req.session.Sid,date:req.session.date,search:Account.SearchCounter})}
   else{
     res.redirect('/')
