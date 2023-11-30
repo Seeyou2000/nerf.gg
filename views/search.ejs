@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>nerf.gg</title>
     <script type="text/javascript" src="/search/script.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/search/style.css">
 </head>
 <body>
     <div class="button_and_summoner">
-        <a href="../mypage"><button class="button">마이페이지</button></a>
-        <a href="../challenges"><button class="button">도전과제</button></a>
+        <a href="/mypage"><button class="button">마이페이지</button></a>
+        <a href="/Challenges"><button class="button">도전과제</button></a>
+        <p id="test"><%= UserId %></p>
+        <form action='/signout' method="post"><button class="button">로그아웃</button></form>
         <div id="search">
             <select id="choose_region">
                 <option value="BR">BR</option>
@@ -48,9 +50,7 @@
         </div>
         <div class="item" id="rankedDivision"></div>
     </div>
-    <form action='/signout' method="post">
-        <button >로그아웃</button>
-    </form>
+   
     
     
 </body>

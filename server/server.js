@@ -92,10 +92,10 @@ app.listen(4000, ()=>{
 //첫 페이지
 app.get('/',function(req,res){ 
   if(!req.session.Sid){//세션이 없으면  로그인페이지로
-    res.redirect('/signin')
+    res.render('signin')
   }
   else{//세션이 있으면 검색화면으로
-    res.redirect('/search')
+    res.render('search',{UserId:req.session.Sid})
   }
 })
 
@@ -166,11 +166,18 @@ app.get('/search/by-summoner/:id/:region', async function(req, res){
 })
 
 //로그인페이지
+
+
 app.get('/signin',function(req,res,next){  
   if(req.session.Sid){//세션이 있으면 검색화면으로
-    res.redirect('/search')
+    res.render('search');
   }
   next()
+})
+
+//회원가입페이지
+app.get('/signup',function(req,res){
+  res.render('signup')
 })
 
 //회원가입
@@ -193,7 +200,9 @@ app.post('/signup',async function(req,res){
   } ;
   
 })
-
+app.get('/signin',function(req,res){
+  res.render('signin')
+})
 
 //로그인
 app.post('/signin',async function(req,res){
@@ -231,7 +240,8 @@ app.post('/signin',async function(req,res){
           //console.log(Account)
           req.session.date=Account.AttendanceCounter;
           req.session.save
-       res.redirect('/search');}
+          UserId=req.session.Sid;
+       res.render('search');}
       else{//비밀번호 오류
         return res.render('WrongPw',{error:'잘못된 비밀번호 입니다.비밀번호를 확인해주세요'});
       }
@@ -300,6 +310,16 @@ app.get('/challenges',async function(req,res){
   let Account=await AccountTable.findOne({"id":req.session.Sid})
     
   res.render('Challenges',{tid:req.session.Sid,date:req.session.date,search:Account.SearchCounter})}
+  else{
+    res.redirect('/')
+  }
+})
+
+//마이페이지
+app.get('/mypage',function(req,res){
+  if(req.session){
+  res.render('mypage')
+  }
   else{
     res.redirect('/')
   }
