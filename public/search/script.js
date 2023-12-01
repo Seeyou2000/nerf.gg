@@ -1,18 +1,21 @@
+
 var inputSummonerName = "";
 var regionIndex = "";
-var matchInfos = [];
-var gameCreationArray = [];
-var parseMatchData = [];
 
 function SearchSummoner()
 {
     inputSummonerName = document.getElementById("summonerName").value;
     regionIndex = document.getElementById("choose_region").value;
+    document.getElementById("matchInfo").innerHTML = '';
     Data();
 }
 
 async function Data()
 {
+    var matchInfos = [];
+    var gameCreationArray = [];
+    var parseMatchDatas = [];
+
     var summonerNameUrl = "/search/by-name/" + inputSummonerName + "/" + regionIndex;
     var fullSummonerNameUrl = location.origin + summonerNameUrl;
 
@@ -22,10 +25,10 @@ async function Data()
     const {name: summonerName, summonerLevel, profileIconId, id: summonerId, puuid} = fullDataSummoner;
 
     //소환사 이름
-    document.getElementById("summonerNameData").innerHTML = "<h1>" + summonerName + "</h1>";
+    document.getElementById("summonerNameData").innerHTML = "<h2>" + summonerName + "</h2>";
 
     //소환사 레벨
-    document.getElementById("summonerLevelData").innerHTML = "소환사 레벨 : " + summonerLevel;
+    document.getElementById("summonerLevelData").innerHTML = "<h2>레벨 : " + summonerLevel + "</h2>";
 
     //소환사 프로필 사진
     var profilePictureUrl = "https://ddragon.leagueoflegends.com/cdn/13.21.1/img/profileicon/" + profileIconId + ".png";
@@ -47,14 +50,13 @@ async function Data()
 
             if(summonerInfo.puuid === puuid)
             {
-                console.log(summonerInfo.puuid);
-                console.log(puuid);
+                console.log(summonerInfo);
                 summonerInfoDict = {
                     kills : summonerInfo.kills,
                     deaths : summonerInfo.deaths,
                     assists : summonerInfo.assists,
                     timePlayed : summonerInfo.timePlayed,
-                    gameCreation : gameCreation,
+                    individualPosition : summonerInfo.individualPosition,
                     win : summonerInfo.win,
                     champLevel : summonerInfo.champLevel,
                     championName : summonerInfo.championName,
@@ -63,7 +65,7 @@ async function Data()
                     quadraKills : summonerInfo.quadraKills,
                     pentaKills : summonerInfo.pentaKills,
                 }
-                parseMatchData.push(summonerInfoDict);
+                parseMatchDatas.push(summonerInfoDict);
                 break;
             }
         }
@@ -75,8 +77,6 @@ async function Data()
     var fullSummonerIdUrl = location.origin + summonerIdUrl;
     const rankedSummoner = await fetch(fullSummonerIdUrl);
     const fullRankedSummoner = await rankedSummoner.json();
-
-    console.log(fullRankedSummoner);
 
     //랭크 게임 정보
     if(fullRankedSummoner.length === 0)
@@ -104,5 +104,41 @@ async function Data()
         if(tier == "MASTER") document.getElementById("rankedDivision").style.color = "blueviolet";
         if(tier == "GRANDMASTER") document.getElementById("rankedDivision").style.color = "lightred";
         if(tier == "CHALLENGER") document.getElementById("rankedDivision").style.color = "gold";
+
+        console.log(parseMatchDatas);
+
+        for (parseMatchData of parseMatchDatas) {
+            // Create a new summonerMatch div for each set of data
+            var killTag = "";
+            var isWin = "LOSE";
+            var minute = 0;
+            var newSummonerMatch = document.createElement("div");
+            newSummonerMatch.className = "summonerMatch";
+
+            if(parseMatchData.win) isWin = "WIN";
+
+            if(parseMatchData.doubleKills) killTag = "double Kill";
+            if(parseMatchData.tripleKills) killTag = "Triple Kill";
+            if(parseMatchData.quadraKills) killTag = "Quadra Kill";
+            if(parseMatchData.pentaKills) killTag = "Penta Kill";
+
+            while(parseMatchData.timePlayed > 60){
+                parseMatchData.timePlayed -= 60;
+                minute += 1;
+            }
+            if(parseMatchData.timePlayed)
+            
+            newSummonerMatch.innerHTML += `
+            <div class="isWin">${isWin}</div>
+            <div class="championPicture"><img src="https://ddragon.leagueoflegends.com/cdn/13.23.1/img/champion/${parseMatchData.championName}.png"></img></div>
+            <div>kills / deaths / assists</div>
+            <div class="lane">${parseMatchData.individualPosition}</div>
+            <div class="KDAInfo">${parseMatchData.kills} / ${parseMatchData.deaths} / ${parseMatchData.assists}</div>
+            <div class="timePlayed">${minute}분 ${parseMatchData.timePlayed}초</div>
+            <div class="whatKiils">${killTag}</div>`
+            
+            // Append the new summonerMatch div to the existing status div
+            document.getElementById("matchInfo").appendChild(newSummonerMatch);
+        }
     }
 }
