@@ -22,9 +22,16 @@
         display:inline;
       }
       </style>
+      <link rel="stylesheet" href="/search/style.css">
 </head>
 <body>
-  <p>id:<%=tid%></p>
+  <div class="button_and_summoner">
+    <a href="/"><button class="button">nerf.gg</button></a>
+    <a href="/mypage"><button class="button">마이페이지</button></a>
+    <a href="/Challenges"><button class="button">도전과제</button></a>
+    <p id="test"><%= UserId %></p>
+    <form action='/signout' method="post"><button class="button">로그아웃</button></form></div>
+  <p>id:<%=UserId%></p>
 <div class>
   출석일수 : <%=date%>
   <% for(var i=1;i<=9;i=i+2){%>

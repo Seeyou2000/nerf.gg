@@ -170,7 +170,7 @@ app.get('/search/by-summoner/:id/:region', async function(req, res){
 
 app.get('/signin',function(req,res,next){  
   if(req.session.Sid){//세션이 있으면 검색화면으로
-    res.render('search');
+    res.redirect('/');
   }
   next()
 })
@@ -241,7 +241,7 @@ app.post('/signin',async function(req,res){
           req.session.date=Account.AttendanceCounter;
           req.session.save
           UserId=req.session.Sid;
-       res.render('search');}
+       res.redirect('/');}
       else{//비밀번호 오류
         return res.render('WrongPw',{error:'잘못된 비밀번호 입니다.비밀번호를 확인해주세요'});
       }
@@ -309,7 +309,7 @@ app.get('/challenges',async function(req,res){
   if(req.session){
   let Account=await AccountTable.findOne({"id":req.session.Sid})
     
-  res.render('Challenges',{tid:req.session.Sid,date:req.session.date,search:Account.SearchCounter})}
+  res.render('Challenges',{UserId:req.session.Sid,date:req.session.date,search:Account.SearchCounter})}
   else{
     res.redirect('/')
   }
@@ -318,7 +318,7 @@ app.get('/challenges',async function(req,res){
 //마이페이지
 app.get('/mypage',function(req,res){
   if(req.session){
-  res.render('mypage')
+  res.render('mypage',{UserId:req.session.Sid})
   }
   else{
     res.redirect('/')

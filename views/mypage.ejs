@@ -4,18 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
+    <link rel="stylesheet" href="/search/style.css">
 </head>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <body>
+
+    <div class="button_and_summoner">
+        <a href="/"><button class="button">nerf.gg</button></a>
+        <a href="/mypage"><button class="button">마이페이지</button></a>
+        <a href="/Challenges"><button class="button">도전과제</button></a>
+        <p id="test"><%= UserId %></p>
+        <form action='/signout' method="post"><button class="button">로그아웃</button></form></div>
     비밀번호 변경및 계정삭제
-    <form action='/change_password' method="post">
+    <br> <br>
+    <table style="margin-left:auto;margin-right: auto;">
+    <tr>
+        <td>
+            비밀번호변경
+        </td>
+        <td><form action='/change_password' method="post">
         <input type="text" name="NEWPASSWORD" placeholder="새로운 비밀번호">
-        <button>비밀번호 변경</button>
-    </form>
-    
-    <form action='/delete_account' method="post">
-        <button >계정삭제</button>
-    </form>
-    <a href="/"><button>첫화면으로</button></a>
+        <button>변경</button>
+        </form>
+        </td>
+    </tr>
+    <tr>
+        <td>계정삭제</td>
+    <td><form action='/delete_account' method="post">
+        <button >현재계정삭제</button>
+     </form>
+    </td>
+    </tr>
+    </table>
 </body>
 </html>

@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<head></head>
+<head>
+    <link rel="stylesheet" href="/search/style.css">
+</head>
 <body>
+    
     <h1>로그인 페이지</h1>
     <form action="/signin" method="post">
-        ID<input type="text" name="ID"><br>
-        PassWord<input type="text" name="PASSWORD"><br>
-        <input type="submit">
+        <input type="text" name="ID" placeholder="아이디" style="width:200px; height:20px;"><br>
+        <input type="text" name="PASSWORD" placeholder="비밀번호" style="width:200px; height:20px;"><br><br>
+        <input type="submit" value="로그인" style="width:200px; height:30px; background-color: darkgray;" >
     </form>
     <div>  
-    처음 방문이신가요?<a href="/signup">createaccount</a>
+    <p style="font-size: 10px;">처음 방문이신가요?<a href="/signup">회원가입</a></p>
     </div>
 </body>

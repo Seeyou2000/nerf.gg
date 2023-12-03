@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<head></head>
+<head>
+    <link rel="stylesheet" href="/search/style.css">
+</head>
 <body>
     <h1>회원가입페이지</h1>
     <form action="/signup" method="post">
-        ID<input type="text" name="ID"><br>
-        PassWord<input type="text" placeholder="최소 10자리" name="PASSWORD"><br>
-        <input type="submit">
+        <input type="text" name="ID" placeholder="아이디" style="width:200px; height:20px;"><br>
+        <input type="text" name="PASSWORD" placeholder="비밀번호" style="width:200px; height:20px;"><br><br>
+        <input type="submit" style="width:200px; height:30px; background-color: darkgray;" value="회원가입">
     </form>
 </body>
