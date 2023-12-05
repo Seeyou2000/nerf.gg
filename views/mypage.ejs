@@ -13,8 +13,10 @@
         <a href="/"><button class="button">nerf.gg</button></a>
         <a href="/mypage"><button class="button">마이페이지</button></a>
         <a href="/Challenges"><button class="button">도전과제</button></a>
-        <p id="test"><%= UserId %></p>
-        <form action='/signout' method="post"><button class="button">로그아웃</button></form></div>
+        <div id="account">
+            <span id="ID">아이디 : <%= UserId %></span>
+            <form action='/signout' method="post"><button class="button">로그아웃</button></form>
+        </div></div>
     비밀번호 변경및 계정삭제
     <br> <br>
     <table style="margin-left:auto;margin-right: auto;">
