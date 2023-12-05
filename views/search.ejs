@@ -12,32 +12,34 @@
         <a href="/"><button class="button">nerf.gg</button></a>
         <a href="/mypage"><button class="button">마이페이지</button></a>
         <a href="/Challenges"><button class="button">도전과제</button></a>
-        <p id="test"><%= UserId %></p>
-        <form action='/signout' method="post"><button class="button">로그아웃</button></form>
-        <div id="search">
-            <select id="choose_region">
-                <option value="BR">BR</option>
-                <option value="EUN">EUN</option>
-                <option value="EUW">EUW</option>
-                <option value="JP">JP</option>
-                <option value="KR">KR</option>
-                <option value="LA">LA</option>
-                <option value="LA2">LA2</option>
-                <option value="NA">NA</option>
-                <option value="OC">OC</option>
-                <option value="TR">TR</option>
-                <option value="RU">RU</option>
-                <option value="PH2">PH2</option>
-                <option value="SG2">SG2</option>
-                <option value="TH2">TH2</option>
-                <option value="TW2">TW2</option>
-                <option value="VN2">VN2</option>
-            </select>
-            <input type="text" id="summonerName">
-            <input type="button" id="searchButton" value="검색" onclick="SearchSummoner()">
+        <div id="account">
+            <span id="ID">아이디 : <%= UserId %></span>
+            <form action='/signout' method="post"><button class="button">로그아웃</button></form>
         </div>
     </div>
-    <h1>nerf.gg</h1>
+    <br>
+    <div id="search">
+        <select id="choose_region">
+            <option value="BR">BR</option>
+            <option value="EUN">EUN</option>
+            <option value="EUW">EUW</option>
+            <option value="JP">JP</option>
+            <option value="KR">KR</option>
+            <option value="LA">LA</option>
+            <option value="LA2">LA2</option>
+            <option value="NA">NA</option>
+            <option value="OC">OC</option>
+            <option value="TR">TR</option>
+            <option value="RU">RU</option>
+            <option value="PH2">PH2</option>
+            <option value="SG2">SG2</option>
+            <option value="TH2">TH2</option>
+            <option value="TW2">TW2</option>
+            <option value="VN2">VN2</option>
+        </select>
+        <input type="text" id="summonerName">
+        <input type="button" id="searchButton" value="검색" onclick="SearchSummoner()">
+    </div>
     <div class="summonerInfo">
         <div class="info" id="summonerProfile">
             <img id="summonerProfilePictureData">

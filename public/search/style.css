@@ -11,23 +11,31 @@ body
     align-items: center;
     background-color: rgb(189, 189, 189);
 }
-.button_and_summoner > #search
+.button_and_summoner > #account
 {
     margin-left: auto;
-}
-.button_and_summoner > #search > *
-{
-    height: 25px;
 }
 .button
 {
     border: none;
+    font-weight: bold;
     padding: 10px;
     font-size: 16px;
-    font-weight: bold;
     cursor: pointer;
     background-color: rgb(189, 189, 189);
 }
+#ID
+{
+    border: none;
+    font-weight: bold;
+    padding: 10px;
+    font-size: 10px;
+    background-color: rgb(189, 189, 189);
+}
+#account{
+    float: right;
+}
+
 .button:hover
 {
     background-color: skyblue;
@@ -38,7 +46,6 @@ body
     width: 50%;
     display: grid;
     grid-template-columns: auto 1fr 1fr;
-    background-color: white;
 }
 .info
 {
@@ -52,6 +59,20 @@ body
 .summonerInfo > .info > img{
     width: 200px;
     height: 200px;
+}
+#choose_region
+{
+    height: 30px;
+}
+#summonerName
+{
+    width: 500px;
+    height: 30px;
+}
+#searchButton
+{   
+    height: 30px;
+    font-weight: bold;
 }
 #rankedWin
 {
@@ -79,7 +100,7 @@ body
 {
     display: grid;
     grid-template-columns: 1fr 1fr 50%;
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 40px);
     width: 50%;
     border: 2px solid black;
 }
