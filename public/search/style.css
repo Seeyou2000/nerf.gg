@@ -43,14 +43,9 @@ body
 .summonerInfo
 {
     height: 200px;
-    width: 50%;
+    width: 80%;
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
-}
-.info
-{
-    top: 50%;
-    left: 50%;
+    grid-template-columns: auto auto auto;
 }
 .info:nth-child(1)
 {
@@ -101,7 +96,7 @@ body
     display: grid;
     grid-template-columns: 1fr 1fr 50%;
     grid-template-rows: repeat(3, 40px);
-    width: 50%;
+    width: 80%;
     border: 2px solid black;
 }
 .championPicture
