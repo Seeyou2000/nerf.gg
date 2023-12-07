@@ -230,6 +230,7 @@ app.post('/signin',async function(req,res){
              let Account=await AccountTable.findOne({id:tempId})
              Account.AttendanceCounter+=1;
              Account.save();
+             req.session.date=Account.AttendanceCounter;
           }
           //오늘 로그인 한적이 있는경우
           else{console.log('로그인기록있음');}
