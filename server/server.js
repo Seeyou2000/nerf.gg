@@ -1,28 +1,18 @@
-//require('dotenv').config({path:'variables.env'});
-
-const express=require('express');
+const express = require('express');
 const mongoose = require('mongoose');
-const app=express();
-const cookiParser=require("cookie-parser");
-const session =require('express-session');
-const fileStore=require('session-file-store')(session)
-const path = require('path')
-const ejs=require('ejs');
-mongoose.connect('mongodb://127.0.0.1:27017/account, /challenges').then(
-  ()=>{console.log('Success')},//연결 성공
-  err=>{console.log(err)}//연결실패
-  )
+const app = express();
+const session = require('express-session');
+const fileStore = require('session-file-store')(session)
+const path = require('path');
+const ejs = require('ejs');
 
-const AccountObj=mongoose.createConnection('mongodb://127.0.0.1:27017/account');
-const ChallengesObj=mongoose.createConnection('mongodb://127.0.0.1:27017/challenges');
-
+const AccountObj = mongoose.createConnection('mongodb://127.0.0.1:27017/account');
+const ChallengesObj = mongoose.createConnection('mongodb://127.0.0.1:27017/challenges');
 
 app.set('views', '../views')
 app.set('view engine','ejs')
 app.use(express.static(path.join(__dirname, '../public')))
-app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use(cookiParser());
 app.use(session({
   secret:'SNUST',//암호화
   resave:false,
@@ -31,12 +21,8 @@ app.use(session({
   cookie:{httpOnly:true,}
 }));
 
-
-
 require("dotenv").config({path: '../.env'});
 const API_KEY = process.env.API_KEY;
-
-
 
 const Regions = {
   BR : ['br1.api.riotgames.com', 'americas.api.riotgames.com'],
@@ -64,24 +50,12 @@ const AccountSchema = new mongoose.Schema({
   SearchCounter:{type:Number,default:0}//검색횟수
 })
 const AccountTable=AccountObj.model('AccountTable',AccountSchema)
-//const Account=new AccountTable;
-
 
 const ChallengesSchema = new mongoose.Schema({
   id:String,//로그인한 계정의 ID
   date:String//로그인한날짜
 })
 const ChallengesTable=ChallengesObj.model('ChallengesTable',ChallengesSchema)
-//const Challenges=new ChallengesTable;
-//module.exports={AccountTable,ChallengesTable};
-
-
-
-//서버열기
-
-// app.all('*',function(req,res){
-//   res.status(404).send("<h1>error</h1>")
-// })
 
 app.listen(4000, ()=>{
   console.log("server run")
@@ -166,13 +140,14 @@ app.get('/search/by-summoner/:id/:region', async function(req, res){
 })
 
 //로그인페이지
-
-
 app.get('/signin',function(req,res,next){  
   if(req.session.Sid){//세션이 있으면 검색화면으로
     res.redirect('/');
   }
   next()
+})
+app.get('/signin',function(req,res){
+  res.render('signin')
 })
 
 //회원가입페이지
@@ -197,11 +172,8 @@ app.post('/signup',async function(req,res){
     });
     Account.save()
     return res.redirect('/')
-  } ;
+  }
   
-})
-app.get('/signin',function(req,res){
-  res.render('signin')
 })
 
 //로그인
@@ -305,7 +277,6 @@ return korFormat;
 }
 
 //도전과제 페이지
-
 app.get('/challenges',async function(req,res){
   if(req.session){
   let Account=await AccountTable.findOne({"id":req.session.Sid})
